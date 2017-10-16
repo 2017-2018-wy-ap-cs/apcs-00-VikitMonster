@@ -3,7 +3,7 @@ main = do
 --These functions work with different inputs 
 --These are also only core commands
 --A lot of this was taken from stackexchange
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 --This is my Function for Draw Board 
 --First Idea for MY DRAW BOARD
 drawLineh :: [Int] -> [Char]
@@ -17,7 +17,7 @@ makeboard :: [[Int]] -> String
 makeboard [] = []
 makeboard (x:xs) = drawLineh x ++ "\n" ++ makeboard xs
 
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 --Second Idea for MY DRAW BOARD
 data Board = Board { loc :: [(Int,Int,Int)] , turn :: Int}
@@ -26,11 +26,29 @@ givenBoardstart = (Board [(0,0,0), (1,0,0), (2,0,0),
                           (0,1,0), (1,1,0), (2,1,0), 
                           (0,2,0), (1,2,0), (2,2,0)] 1)
                           
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 --My Make Move Functions
 --Uses my Second Idea draw board as framework
-
+--makeMove is final functions others are helpers to helpers
+makeMovehelper :: Int -> Int -> [(Int,Int,Int)] -> Board -> Board
+makeMovehelper xposn yposn filler (Board ((a,b,c):xs) total)
+  | xposn == a && yposn == b = 
+     (Board (filler ++ [(a,b,total)] ++ xs) ((mod total 2) + 1))
+  | otherwise = (makeMovehelper xposn yposn (filler ++ [(a,b,c)]) (Board xs total))
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+totalfinish :: Int -> [(Int,Int,Int)] -> [Int]
+totalfinish xposn ((a,b,c):ab)
+  | xposn == a && c == 0 = 
+     (b : (totalfinish xposn ab))
+  | otherwise = (totalfinish xposn ab)
+totalfinish xposn [] = []
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+makeMove :: Int -> Board -> Board
+makeMove xposn (Board filler total)
+  | (length (totalfinish xposn filler)) == 0 = 
+     (Board filler total)
+  | otherwise = (makeMovehelper xposn (maximum (totalfinish xposn filler)) [] (Board filler total))
 
 
 
@@ -39,22 +57,22 @@ givenBoardstart = (Board [(0,0,0), (1,0,0), (2,0,0),
 --PLAYERWISE GIVES YOU THE FINAL RESULT WHILE IS-WON IS THE CORE
 --ONLY FUNCTION THAT MATTERS IS PLAYERWISE WHICH TAKES IN THE BOARD
 
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 position ((x,y,z):xs) fins
   | z == fins = ((x,y) : (position xs fins))
   | otherwise =  (position xs fins)
 position [] fins = []
 
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 givenDiagonals given ((xposn,yposn):xs)
   | (div xposn yposn) == given = (True && (givenDiagonals given xs))
   | otherwise = False
 givenDiagonals given [] = True
 
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 isWon :: [(Int,Int)] -> Bool
 isWon ((xposn,yposn):(aposn,bposn):xs) =
@@ -66,8 +84,8 @@ isWon ((xposn,yposn):(aposn,bposn):xs) =
             (iswonhelper [ (fst random) | random <-((xposn,yposn):xs)]))
 iswonhelper given = 3 == ((maximum given) - (minimum given))
 
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 playerWise (Board maaain posn) = 
   if (isWon (position maaain posn)) 
