@@ -49,10 +49,18 @@ makeMove xposn (Board filler total)
   | (length (totalfinish xposn filler)) == 0 = 
      (Board filler total)
   | otherwise = (makeMovehelper xposn (maximum (totalfinish xposn filler)) [] (Board filler total))
-
-
-
-
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+--My is-Legal function
+--This functions basically checks all the possible moves you can make and then tells you if the move is in those moves
+--Takes in the standard board to check all possible
+is-Legal :: Int -> [a] -> [[a]]
+is-Legal 1 xs = [[x] | x<-xs]
+is-Legal n xs
+  | n == length xs = [xs]
+is-Legal n (x:xs) = [x:c | c <- is-Legal (n-1) xs] ++ is-Legal n xs
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+--<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 --My is-Won function
 --PLAYERWISE GIVES YOU THE FINAL RESULT WHILE IS-WON IS THE CORE
 --ONLY FUNCTION THAT MATTERS IS PLAYERWISE WHICH TAKES IN THE BOARD
