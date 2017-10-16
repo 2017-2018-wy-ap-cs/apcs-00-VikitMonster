@@ -1,0 +1,55 @@
+main = do
+  putStrLn "work"
+data Board = Board { loc :: [(Int,Int,Int)] , turn :: Int}
+--These functions work with different inputs 
+--This is my Function for Draw Board 
+--These are also only core commands
+--First Idea for MY DRAW BOARD
+drawLineh :: [Int] -> [Char]
+drawLineh [] = []
+drawLineh (x:xs)
+  | x == 0 = '_' : (drawLineh xs)
+  | x == 1 = 'X' : (drawLineh xs)
+  | x == 2 = 'O' : (drawLineh xs)
+  | otherwise = "error try another string"
+makeboard :: [[Int]] -> String
+makeboard [] = []
+makeboard (x:xs) = drawLineh x ++ "\n" ++ makeboard xs
+--Second Idea for MY DRAW BOARD
+
+
+
+
+
+--My is-Won function
+--PLAYERWISE GIVES YOU THE FINAL RESULT WHILE IS-WON IS THE CORE
+--ONLY FUNCTION THAT MATTERS IS PLAYERWISE WHICH TAKES IN THE BOARD
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+position ((x,y,z):xs) fins
+  | z == fins = ((x,y) : (position xs fins))
+  | otherwise =  (position xs fins)
+position [] fins = []
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+givenDiagonals given ((xposn,yposn):xs)
+  | (div xposn yposn) == given = (True && (givenDiagonals given xs))
+  | otherwise = False
+givenDiagonals given [] = True
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+isWon :: [(Int,Int)] -> Bool
+isWon ((xposn,yposn):(aposn,bposn):xs) =
+            (((iswonhelper [ (snd random) | random <-((xposn,yposn):xs)]) && 
+            (iswonhelper [ (fst random) | random <-((xposn,yposn):xs)]) &&
+            (givenDiagonals (div (aposn - xposn) (bposn - yposn)) 
+            [ (((fst random) - xposn) , ((snd random) - yposn))| random <- ((aposn,bposn):xs)])) ||
+            (iswonhelper [ (snd random) | random <-((xposn,yposn):xs)]) ||
+            (iswonhelper [ (fst random) | random <-((xposn,yposn):xs)]))
+iswonhelper given = 3 == ((maximum given) - (minimum given))
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+playerWise (Board maaain posn) = 
+  if (isWon (position maaain posn)) 
+  then "Congradulations" ++ (show posn) ++ "Won" 
+  else "error"
